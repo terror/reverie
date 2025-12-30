@@ -7,39 +7,23 @@ import (
   tea "github.com/charmbracelet/bubbletea"
 )
 
-type model struct {
-  ready bool
-}
-
-func (m model) Init() tea.Cmd {
-  return nil
-}
-
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-  switch msg := msg.(type) {
-  case tea.KeyMsg:
-    switch msg.String() {
-    case "ctrl+c", "q":
-      return m, tea.Quit
-    }
-  case tea.WindowSizeMsg:
-    m.ready = true
-  }
-
-  return m, nil
-}
-
-func (m model) View() string {
-  if !m.ready {
-    return "loading…"
-  }
-
-  return "hello bubbletea\n\n(q to quit)"
-}
-
 func main() {
+  cwd, err := os.Getwd()
+
+  if err != nil {
+    fmt.Println("error:", err)
+    os.Exit(1)
+  }
+
+  root, err := buildTree(cwd)
+
+  if err != nil {
+    fmt.Println("error:", err)
+    os.Exit(1)
+  }
+
   p := tea.NewProgram(
-    model{},
+    &model{root: root},
     tea.WithAltScreen(),
     tea.WithMouseCellMotion(),
   )
