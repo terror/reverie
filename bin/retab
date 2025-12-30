@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+for file in src/*; do
+  [ -f "$file" ] || continue
+  expand -t 2 "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+done
